@@ -1,0 +1,186 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+export default function ManageUsers() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editingUser, setEditingUser] = useState(null);
+  const [form, setForm] = useState({ user_name: "", user_email: "", user_password: "", user_type: "1" });
+  const [search, setSearch] = useState("");
+
+  const fetchUsers = async (query = "") => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/useredit?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const mapUserType = (type) => (type === "1" ? "Teacher" : type === "2" ? "Staff" : "Admin");
+
+  // ลบผู้ใช้
+  const handleDelete = async (id) => {
+    if (!confirm("Are you sure to delete this user?")) return;
+    await fetch("/api/useredit", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: id }),
+    });
+    fetchUsers(search);
+  };
+
+  // แก้ไขผู้ใช้
+  const handleEdit = (user) => {
+    setEditingUser(user.user_id);
+    setForm({ user_name: user.user_name, user_email: user.user_email, user_password: "", user_type: user.user_type });
+  };
+
+  // สร้าง/อัปเดตผู้ใช้
+  const handleSubmit = async () => {
+    if (!form.user_name || !form.user_email) {
+      alert("Please enter name and email");
+      return;
+    }
+
+    if (editingUser) {
+      await fetch("/api/useredit", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, user_id: editingUser }),
+      });
+    } else {
+      if (!form.user_password) {
+        alert("Please enter password for new user");
+        return;
+      }
+      await fetch("/api/useredit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    }
+
+    setEditingUser(null);
+    setForm({ user_name: "", user_email: "", user_password: "", user_type: "1" });
+    fetchUsers(search);
+  };
+
+  return (
+    <div className="p-6 max-w-5xl mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Manage Users</h1>
+        <Link href="/register" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          Add User
+        </Link>
+      </div>
+
+      {/* ช่องค้นหา */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by name..."
+          className="border p-2 w-full"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button
+          onClick={() => fetchUsers(search)}
+          className="bg-gray-500 text-white px-4 py-2 mt-2 rounded hover:bg-gray-600"
+        >
+          Search
+        </button>
+      </div>
+
+      {/* ฟอร์มสร้าง/แก้ไข */}
+      <div className="mb-4 p-4 border rounded">
+        <input
+          type="text"
+          placeholder="User Name"
+          className="border p-2 mr-2 mb-2"
+          value={form.user_name}
+          onChange={(e) => setForm({ ...form, user_name: e.target.value })}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          className="border p-2 mr-2 mb-2"
+          value={form.user_email}
+          onChange={(e) => setForm({ ...form, user_email: e.target.value })}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border p-2 mr-2 mb-2"
+          value={form.user_password}
+          onChange={(e) => setForm({ ...form, user_password: e.target.value })}
+        />
+        <select
+          className="border p-2 mr-2 mb-2"
+          value={form.user_type}
+          onChange={(e) => setForm({ ...form, user_type: e.target.value })}
+        >
+          <option value="1">Teacher</option>
+          <option value="2">Staff</option>
+          <option value="3">Admin</option>
+        </select>
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          {editingUser ? "Update" : "Create"}
+        </button>
+      </div>
+
+      {/* ตารางผู้ใช้ */}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <table className="w-full border border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border px-4 py-2">User ID</th>
+              <th className="border px-4 py-2">User Name</th>
+              <th className="border px-4 py-2">Email</th>
+              <th className="border px-4 py-2">User Type</th>
+              <th className="border px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.user_id}>
+                <td className="border px-4 py-2">{user.user_id}</td>
+                <td className="border px-4 py-2">{user.user_name}</td>
+                <td className="border px-4 py-2">{user.user_email}</td>
+                <td className="border px-4 py-2">{mapUserType(user.user_type)}</td>
+                <td className="border px-4 py-2 space-x-2">
+                  <button
+                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                    onClick={() => handleEdit(user)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                    onClick={() => handleDelete(user.user_id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
