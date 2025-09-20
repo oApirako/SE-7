@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 18, 2025 at 09:22 AM
+-- Generation Time: Sep 20, 2025 at 12:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -83,13 +83,15 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `user_name`, `user_password`, `user_email`, `user_type`) VALUES
-(1, 'AAA', '123', 'aa@qaa', '1'),
-(2, 'ิิิืbbbb', 'b', 'b', '2'),
-(5, 'asd', '$2b$10$92x19ZyXahRiB7llyR4nW.UUTy9vPK3j4dfsc9iswsT22RTcZqEDC', 'asd', '3'),
+(1, 'Admin', '$2b$10$9Vi281fF0J..08VGi2m02eOMNXEZCMNQlFcJUszUT/q/fE3f32ODG', 'Admin@Admin', '3'),
+(2, 'Staff', '$2b$10$DxXT878MZ6m3Sn/eWhycYeTlm5tbVnVBCrFmn7YaCC7qJCM30ASP2', 'Staff@Staff', '2'),
+(5, 'Teacher', '$2b$10$jonqa.SHOgOK.NS9hzn64OY7RWLllKoU8cS4GnhZ38/RA.lIw87ti', 'Teacher@Teacher', '1'),
 (13, 'sdf', '$2b$10$aW/4x6oCieNSJRmeTVFiCOoI.F6Rvz.ftCBpHZHzQO681RkqxzNEG', 'sdf', '1'),
 (14, '][p', '$2b$10$N9zEwq.HgLeVj2bgCKsng.0VJdhPuU/ZnCDghfcnZbh5V7/D8dHGG', '][p', ''),
 (15, 'qwe', '$2b$10$Vb5vcLhY3YWTf3l40g1eye7vNpmsUIWKnOuVdBWoqS79Z3M.j9tzO', 'qwe', '2'),
-(16, 'zxc', '$2b$10$bj3wUFbypqPNcqDUoim0LuM0I2lT4UoC4xI.XKuI3COhKr43JaTSG', 'zxc', '1');
+(17, 'R', '$2b$10$CPZ8pEyEUuCFtT1bT9tCeuGBIRk/AlxYp96qLyOnsxatlGcddSUf2', 'R', ''),
+(18, 't', '$2b$10$Sv4ffVbd9juQTyQU.OFD0.6ixaYZ3N8iijCszwbzqNh/a9fSqGiQK', 't', '1'),
+(19, 'dasd', '$2b$10$Dt8rs.r8Gy526K/7t3JTBOPST9zbWhLIdhVJeyUhxBPeGhKxgrI.6', 'asda@asd.com', '1');
 
 -- --------------------------------------------------------
 
@@ -102,6 +104,16 @@ CREATE TABLE `userlog` (
   `u_date` datetime NOT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `userlog`
+--
+
+INSERT INTO `userlog` (`u_id`, `u_date`, `user_id`) VALUES
+(1, '2025-09-20 16:06:55', 5),
+(2, '2025-09-20 16:46:41', 1),
+(3, '2025-09-20 17:05:26', 5),
+(4, '2025-09-20 17:10:24', 2);
 
 -- --------------------------------------------------------
 
@@ -186,13 +198,13 @@ ALTER TABLE `notification`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `userlog`
 --
 ALTER TABLE `userlog`
-  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
