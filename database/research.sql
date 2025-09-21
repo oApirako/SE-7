@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 20, 2025 at 12:38 PM
+-- Generation Time: Sep 21, 2025 at 04:02 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,13 +29,21 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `article` (
   `article_id` int(11) NOT NULL,
-  `article_title` int(11) NOT NULL,
-  `article_category` char(50) NOT NULL,
+  `article_title` varchar(100) NOT NULL,
+  `article_category` enum('Computer Science','Engineering') NOT NULL,
   `article_link` varchar(100) NOT NULL,
-  `article_type` char(50) NOT NULL,
+  `article_type` enum('Research','Review','อื่นๆ') NOT NULL,
   `article_date` date NOT NULL,
-  `article__status` enum('Pending','Revision','Appoved','') NOT NULL
+  `article__status` enum('Pending','Revision','Appoved','Rejected') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `article`
+--
+
+INSERT INTO `article` (`article_id`, `article_title`, `article_category`, `article_link`, `article_type`, `article_date`, `article__status`) VALUES
+(1, 'Test', '', 'Test', 'Research', '2025-09-02', 'Pending'),
+(2, '13333', '', 'Tasdasd', 'Review', '2025-09-01', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -91,7 +99,8 @@ INSERT INTO `user` (`user_id`, `user_name`, `user_password`, `user_email`, `user
 (15, 'qwe', '$2b$10$Vb5vcLhY3YWTf3l40g1eye7vNpmsUIWKnOuVdBWoqS79Z3M.j9tzO', 'qwe', '2'),
 (17, 'R', '$2b$10$CPZ8pEyEUuCFtT1bT9tCeuGBIRk/AlxYp96qLyOnsxatlGcddSUf2', 'R', ''),
 (18, 't', '$2b$10$Sv4ffVbd9juQTyQU.OFD0.6ixaYZ3N8iijCszwbzqNh/a9fSqGiQK', 't', '1'),
-(19, 'dasd', '$2b$10$Dt8rs.r8Gy526K/7t3JTBOPST9zbWhLIdhVJeyUhxBPeGhKxgrI.6', 'asda@asd.com', '1');
+(19, 'dasd', '$2b$10$Dt8rs.r8Gy526K/7t3JTBOPST9zbWhLIdhVJeyUhxBPeGhKxgrI.6', 'asda@asd.com', '1'),
+(20, '1111111', '$2b$10$fqB33vwBsK53nM..uWTx8OyzzeeqxqxBFOHrWQ4GzPPjwUF4GiGBe', 'gf@asd.cx', '1');
 
 -- --------------------------------------------------------
 
@@ -113,7 +122,15 @@ INSERT INTO `userlog` (`u_id`, `u_date`, `user_id`) VALUES
 (1, '2025-09-20 16:06:55', 5),
 (2, '2025-09-20 16:46:41', 1),
 (3, '2025-09-20 17:05:26', 5),
-(4, '2025-09-20 17:10:24', 2);
+(4, '2025-09-20 17:10:24', 2),
+(5, '2025-09-20 18:04:46', 1),
+(6, '2025-09-21 19:36:52', 1),
+(7, '2025-09-21 19:40:02', 2),
+(8, '2025-09-21 20:32:28', 1),
+(9, '2025-09-21 20:32:53', 5),
+(10, '2025-09-21 20:33:13', 2),
+(11, '2025-09-21 20:53:09', 1),
+(12, '2025-09-21 20:53:58', 2);
 
 -- --------------------------------------------------------
 
@@ -126,6 +143,14 @@ CREATE TABLE `user_article` (
   `article` int(11) NOT NULL,
   `is_owner` enum('1','0','','') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_article`
+--
+
+INSERT INTO `user_article` (`user_id`, `article`, `is_owner`) VALUES
+(5, 1, '1'),
+(13, 2, '1');
 
 --
 -- Indexes for dumped tables
@@ -180,7 +205,7 @@ ALTER TABLE `user_article`
 -- AUTO_INCREMENT for table `article`
 --
 ALTER TABLE `article`
-  MODIFY `article_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `article_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `articlehistory`
@@ -198,13 +223,13 @@ ALTER TABLE `notification`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `userlog`
 --
 ALTER TABLE `userlog`
-  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
