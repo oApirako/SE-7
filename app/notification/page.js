@@ -70,7 +70,7 @@ export default function NotificationPage() {
         <table className="min-w-full table-auto">
           <thead className="bg-gray-200">
             <tr>
-              {['ID', 'Title', 'Category', 'Type', 'Date', 'Link'].map(col => (
+              {['ID', 'Title', 'Category', 'Type', 'Date', 'Status', 'Link'].map(col => (
                 <th key={col} className="border px-4 py-2 text-left">{col}</th>
               ))}
             </tr>
@@ -78,7 +78,7 @@ export default function NotificationPage() {
           <tbody>
             {articles.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-4">ไม่พบข้อมูล</td>
+                <td colSpan={7} className="text-center py-4">ไม่พบข้อมูล</td>
               </tr>
             ) : (
               articles.map(article => (
@@ -88,9 +88,10 @@ export default function NotificationPage() {
                   <td className="border px-4 py-2">{article.article_category}</td>
                   <td className="border px-4 py-2">{article.article_type}</td>
                   <td className="border px-4 py-2">{article.article_date}</td>
+                  <td className="border px-4 py-2">{article.article__status}</td>
                   <td className="border px-4 py-2">
                     <Link
-                      href={`/detail/${article.article_id}`}
+                      href={`/notification/detail/${article.article_id}`}
                       className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                     >
                       ดูเนื้อหา
