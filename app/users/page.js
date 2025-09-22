@@ -1,12 +1,14 @@
-"use client";
+'use client';
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function UsersPage() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
-  // ฟังก์ชันแปลง user_type เป็นข้อความ
+  // แปลง user_type เป็นข้อความ
   const getUserTypeName = (type) => {
     switch (type) {
       case 1:
@@ -34,11 +36,7 @@ export default function UsersPage() {
     })
       .then((res) => res.json())
       .then((data) => {
-        // แปลง user_type เป็น number
-        setUser({
-          ...data,
-          user_type: Number(data.user_type)
-        });
+        setUser({ ...data, user_type: Number(data.user_type) });
       })
       .catch(console.error);
   }, [router]);
@@ -55,13 +53,21 @@ export default function UsersPage() {
         <p><strong>Type:</strong> {getUserTypeName(user.user_type)}</p>
       </div>
 
+      {/* ปุ่มแก้ไขรหัสผ่าน / ชื่อ */}
+      <Link
+        href="/resetpassword"
+        className="block bg-blue-500 text-white p-2 w-full mt-4 text-center rounded hover:bg-yellow-600"
+      >
+        Reset Password / Edit Name
+      </Link>
+
       <button
         onClick={() => {
           localStorage.removeItem("user_id");
-          localStorage.removeItem("user_type"); // ลบ user_type ด้วย
-          window.location.href = "/login"; // reload หน้า + redirect
+          localStorage.removeItem("user_type");
+          window.location.href = "/login";
         }}
-        className="bg-red-500 text-white p-2 w-full mt-4 hover:bg-red-600 rounded"
+        className="bg-red-500 text-white p-2 w-full mt-2 hover:bg-red-600 rounded"
       >
         Logout
       </button>
