@@ -11,7 +11,7 @@ export async function GET(req) {
     const conn = await connect();
 
     let query = `
-      SELECT a.article_id, a.article_title, a.article_category, a.article_type, a.article_date, a.article_link
+      SELECT a.article_id, a.article_title, a.article_category, a.article_type, a.article_date, a.article_link, a.article__status
       FROM article a
       INNER JOIN user_article ua ON ua.article = a.article_id
       INNER JOIN user u ON u.user_id = ua.user_id
@@ -46,7 +46,7 @@ export async function GET(req) {
 
     await conn.end();
 
-    // ส่งกลับทั้ง articles และ enum สำหรับ dropdown
+    // ส่งกลับทั้ง articles (พร้อม article__status) และ enum สำหรับ dropdown
     return new Response(
       JSON.stringify({ articles, types: enumValues }),
       { status: 200 }
