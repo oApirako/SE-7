@@ -34,7 +34,7 @@ CREATE TABLE `article` (
   `article_link` varchar(100) NOT NULL,
   `article_type` enum('Research','Review','อื่นๆ') NOT NULL,
   `article_date` date NOT NULL,
-  `article__status` enum('Pending','Revision','Appoved','Rejected') NOT NULL
+  `article__status` enum('Pending','Revision','Approved','Rejected') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
