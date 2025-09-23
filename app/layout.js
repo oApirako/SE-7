@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
 
             
             {mounted && userType === Teacher && (
-              <Link href="/myarticles" className="hover:text-blue-600 transition">บทความของฉัน</Link>
+              <Link href="/myarticle" className="hover:text-blue-600 transition">บทความของฉัน</Link>
             )}
 
 

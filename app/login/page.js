@@ -1,3 +1,4 @@
+// app/login/page.js
 "use client";
 import { useState } from "react";
 import Link from "next/link";
@@ -57,13 +58,6 @@ export default function LoginPage() {
       >
         Login
       </button>
-
-      <Link
-        href="/resetpassword"
-        className="bg-green-500 text-white p-2 w-full mt-2 block text-center hover:bg-green-600"
-      >
-        reset password
-      </Link>
 
       {message && <p className="mt-2 text-red-500">{message}</p>}
     </div>
