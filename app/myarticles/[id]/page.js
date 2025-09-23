@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ArticleDetail({ params }) {
-  const { id } = params;
+  // Next.js 15.5.3: params is a Promise, unwrap with React.use()
+  const { id } = React.use(params);
   const router = useRouter();
   const [data, setData] = useState(null);
   const [err, setErr] = useState("");

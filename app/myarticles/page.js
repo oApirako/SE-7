@@ -59,7 +59,7 @@ export default function MyArticlesPage() {
       <div className="flex justify-between mb-4">
         <h1 className="text-2xl font-semibold">📄 My Articles</h1>
         <Link
-          href="/articles/new"
+          href="/myarticles/new"
           className="px-3 py-2 rounded bg-green-600 text-white hover:bg-green-700"
         >
           ➕ เพิ่มบทความ
@@ -95,13 +95,13 @@ export default function MyArticlesPage() {
                   <td className="p-2 border">{a.article__status}</td>
                   <td className="p-2 border text-center space-x-2">
                     <Link
-                      href={`/articles/${a.article_id}`}
+                      href={`/myarticles/${a.article_id}`}
                       className="px-2 py-1 bg-blue-600 text-white rounded"
                     >
                       ดู
                     </Link>
                     <Link
-                      href={`/articles/${a.article_id}/history`}
+                      href={`/myarticles/${a.article_id}/history`}
                       className="px-2 py-1 bg-gray-600 text-white rounded"
                     >
                       ประวัติ
