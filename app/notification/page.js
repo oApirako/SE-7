@@ -87,7 +87,9 @@ export default function NotificationPage() {
                   <td className="border px-4 py-2">{article.article_title}</td>
                   <td className="border px-4 py-2">{article.article_category}</td>
                   <td className="border px-4 py-2">{article.article_type}</td>
-                  <td className="border px-4 py-2">{article.article_date}</td>
+                  <td className="border px-4 py-2">
+                    {new Date(article.article_date).toLocaleDateString("th-TH")}
+                  </td>
                   <td className="border px-4 py-2">{article.article__status}</td>
                   <td className="border px-4 py-2">
                     <Link
