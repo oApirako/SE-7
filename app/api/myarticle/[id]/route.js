@@ -40,7 +40,7 @@ export async function PUT(req, { params }) {
     }
 
     let status = rows[0].article__status;
-    if (status === "Appoved" || status === "Rejected") {
+    if (status === "Approved" || status === "Rejected") {
       status = "Revision";
     }
 
