@@ -1,4 +1,5 @@
 // app/api/conclusion/route.js
+
 import { connect } from "../../lib/db";
 import { NextResponse } from "next/server";
 
@@ -22,8 +23,9 @@ export async function GET(req) {
       FROM article a
       JOIN user_article ua ON a.article_id = ua.article
       JOIN user u ON ua.user_id = u.user_id
-      WHERE 1=1
-    `;
+      WHERE a.article__status = 'Approved'
+    `; // เพิ่มเงื่อนไขให้เลือกเฉพาะ Approved
+
     let params = [];
 
     if (author) {
