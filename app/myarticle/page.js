@@ -1,4 +1,3 @@
-// app/myarticle/page.js
 'use client';
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -10,22 +9,29 @@ export default function MyArticlePage() {
 
   const fetchArticles = async () => {
     setLoading(true);
-    const userId = localStorage.getItem("user_id"); // ใช้ user_id จาก localStorage
+    const userId = localStorage.getItem("user_id");
     if (!userId) {
       setArticles([]);
       setLoading(false);
       return;
     }
 
-    const res = await fetch("/api/myarticle", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, ...filters }),
-    });
+    try {
+      const res = await fetch("/api/myarticle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, ...filters }),
+      });
 
-    const data = await res.json();
-    setArticles(data);
-    setLoading(false);
+      let data = [];
+      try { data = await res.json(); } catch { data = []; }
+      setArticles(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาดในการโหลดบทความ");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchArticles(); }, []);
@@ -33,14 +39,19 @@ export default function MyArticlePage() {
   const handleDelete = async (id) => {
     if (!confirm("ลบผลงานนี้?")) return;
 
-    const res = await fetch(`/api/myarticle?id=${id}`, { method: "DELETE" });
-    const data = await res.json();
-
-    if (res.ok) {
-      alert(data.message);
-      fetchArticles(); // รีเฟรชตารางหลังลบ
-    } else {
-      alert(data.message);
+    try {
+      const res = await fetch(`/api/myarticle?id=${id}`, { method: "DELETE" });
+      let data = {};
+      try { data = await res.json(); } catch {}
+      if (res.ok) {
+        alert(data.message || "ลบบทความเรียบร้อย");
+        fetchArticles();
+      } else {
+        alert(data.message || "เกิดข้อผิดพลาดในการลบ");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาด");
     }
   };
 
@@ -50,7 +61,9 @@ export default function MyArticlePage() {
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">My Articles</h1>
-      <div className="flex gap-2 mb-4">
+
+      {/* Filter & Add */}
+      <div className="flex flex-wrap gap-2 mb-4 items-center">
         <Link href="/myarticle/add" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
           เพิ่มผลงาน
         </Link>
@@ -67,45 +80,46 @@ export default function MyArticlePage() {
         </button>
       </div>
 
+      {/* Table */}
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-300">
+        <div className="overflow-x-auto shadow rounded border border-gray-300">
+          <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-4 py-2 border-b">Title</th>
-                <th className="px-4 py-2 border-b">Category</th>
-                <th className="px-4 py-2 border-b">Type</th>
-                <th className="px-4 py-2 border-b">Date</th>
-                <th className="px-4 py-2 border-b">Status</th>
-                <th className="px-4 py-2 border-b">Action</th>
+                <th className="px-4 py-2 text-left">Title</th>
+                <th className="px-4 py-2 text-left">Category</th>
+                <th className="px-4 py-2 text-left">Type</th>
+                <th className="px-4 py-2 text-left">Date</th>
+                <th className="px-4 py-2 text-left">Status</th>
+                <th className="px-4 py-2 text-left">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white divide-y divide-gray-200">
               {articles.map(a => (
                 <tr key={a.article_id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border-b">{a.article_title}</td>
-                  <td className="px-4 py-2 border-b">{a.article_category}</td>
-                  <td className="px-4 py-2 border-b">{a.article_type}</td>
-                  <td className="px-4 py-2 border-b">
-                    {new Date(a.article_date).toLocaleDateString("th-TH")}
-                  </td>
-                  <td className="px-4 py-2 border-b">
+                  <td className="px-4 py-2">{a.article_title}</td>
+                  <td className="px-4 py-2">{a.article_category}</td>
+                  <td className="px-4 py-2">{a.article_type}</td>
+                  <td className="px-4 py-2">{new Date(a.article_date).toLocaleDateString("th-TH")}</td>
+                  <td className="px-4 py-2">
                     <span className={`px-2 py-1 rounded text-white ${
                       a.article__status === "Pending" ? "bg-yellow-500" :
-
                       a.article__status === "Approved" ? "bg-green-500" :
-
                       a.article__status === "Revision" ? "bg-blue-500" :
                       "bg-red-500"
                     }`}>
                       {a.article__status}
                     </span>
                   </td>
-                  <td className="px-4 py-2 border-b space-x-2">
-                    <Link href={`/myarticle/${a.article_id}/edit`} className="text-blue-500 hover:underline">แก้ไข</Link>
-                    <button onClick={() => handleDelete(a.article_id)} className="text-red-500 hover:underline">ลบ</button>
+                  <td className="px-4 py-2 space-x-2">
+                    <Link href={`/myarticle/${a.article_id}/edit`} className="bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200 transition">
+                      แก้ไข
+                    </Link>
+                    <button onClick={() => handleDelete(a.article_id)} className="bg-red-100 text-red-600 px-3 py-1 rounded hover:bg-red-200 transition">
+                      ลบ
+                    </button>
                   </td>
                 </tr>
               ))}
