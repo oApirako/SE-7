@@ -6,7 +6,7 @@ export default function AddArticle() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Computer Science");
   const [type, setType] = useState("Research");
-  const [link, setLink] = useState("");
+  const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -14,7 +14,7 @@ export default function AddArticle() {
     e.preventDefault();
     setLoading(true);
 
-    const userId = localStorage.getItem("user_id"); // 👈 เอาคนที่ login อยู่
+    const userId = localStorage.getItem("user_id"); // เอาคนที่ login อยู่
     if (!userId) {
       alert("กรุณาเข้าสู่ระบบก่อนเพิ่มผลงาน");
       setLoading(false);
@@ -22,10 +22,16 @@ export default function AddArticle() {
     }
 
     try {
+      const formData = new FormData();
+      formData.append("userId", userId);
+      formData.append("title", title);
+      formData.append("category", category);
+      formData.append("type", type);
+      if (file) formData.append("file", file);
+
       const res = await fetch("/api/myarticle/add", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, title, category, type, link })
+        body: formData
       });
 
       const data = await res.json();
@@ -76,13 +82,27 @@ export default function AddArticle() {
           <option>อื่นๆ</option>
         </select>
 
-        <input
-          type="text"
-          className="w-full border px-3 py-2 rounded"
-          placeholder="Link / File Path (ถ้ามี)"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-        />
+        {/* ปุ่มเลือกไฟล์ */}
+        <div className="flex flex-col">
+          <input
+            type="file"
+            id="fileInput"
+            className="hidden"
+            onChange={e => setFile(e.target.files[0])}
+          />
+          <button
+            type="button"
+            onClick={() => document.getElementById("fileInput").click()}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+          >
+            เลือกไฟล์เอกสาร
+          </button>
+          {file && (
+            <span className="mt-2 max-w-xs truncate" title={file.name}>
+              {file.name}
+            </span>
+          )}
+        </div>
 
         <button
           type="submit"

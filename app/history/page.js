@@ -22,7 +22,6 @@ export default function HistoryPage() {
     fetchLogs();
   }, []);
 
-  // ฟังก์ชันแปลง user_type
   const mapUserType = (type) => {
     if (type === "1") return "Teacher";
     if (type === "2") return "Staff";
@@ -30,33 +29,45 @@ export default function HistoryPage() {
     return "Unknown";
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p className="text-center py-6">Loading...</p>;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl mb-4">User Login History</h1>
-      <table className="w-full border border-gray-300">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="border px-4 py-2">ลำดับ</th>
-            <th className="border px-4 py-2">User ID</th>
-            <th className="border px-4 py-2">User Name</th>
-            <th className="border px-4 py-2">User Type</th>
-            <th className="border px-4 py-2">Login Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {logs.map((log) => (
-            <tr key={log.u_id}>
-              <td className="border px-4 py-2">{log.u_id}</td>
-              <td className="border px-4 py-2">{log.user_id}</td>
-              <td className="border px-4 py-2">{log.user_name}</td>
-              <td className="border px-4 py-2">{mapUserType(log.user_type)}</td>
-              <td className="border px-4 py-2">{new Date(log.u_date).toLocaleString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div>
+      <div className="max-w-5xl mx-auto bg-white shadow-md rounded-lg p-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">User Login History</h1>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-3 text-left text-gray-700 font-semibold">ลำดับ</th>
+                <th className="px-4 py-3 text-left text-gray-700 font-semibold">User ID</th>
+                <th className="px-4 py-3 text-left text-gray-700 font-semibold">User Name</th>
+                <th className="px-4 py-3 text-left text-gray-700 font-semibold">User Type</th>
+                <th className="px-4 py-3 text-left text-gray-700 font-semibold">Login Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {logs.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-6 text-gray-500">
+                    ไม่มีข้อมูล
+                  </td>
+                </tr>
+              ) : (
+                logs.map((log) => (
+                  <tr key={log.u_id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-2">{log.u_id}</td>
+                    <td className="px-4 py-2">{log.user_id}</td>
+                    <td className="px-4 py-2">{log.user_name}</td>
+                    <td className="px-4 py-2">{mapUserType(log.user_type)}</td>
+                    <td className="px-4 py-2">{new Date(log.u_date).toLocaleString()}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 // app/api/myarticle/[id]/route.js
 import { connect } from "../../../lib/db";
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 // GET: ดึงข้อมูลบทความ
 export async function GET(req, { params }) {
@@ -23,10 +25,30 @@ export async function GET(req, { params }) {
   }
 }
 
-// PUT: อัปเดตบทความ + comment + เปลี่ยนสถานะ Appoved/Rejected → Revision
+// PUT: อัปเดตบทความ + comment + อัปโหลดไฟล์ใหม่
 export async function PUT(req, { params }) {
   try {
-    const { title, category, type, link, comment } = await req.json();
+    const formData = await req.formData();
+    const title = formData.get("title") || "";
+    const category = formData.get("category") || "";
+    const type = formData.get("type") || "";
+    const comment = formData.get("comment") || "";
+    const file = formData.get("file"); // ถ้ามีไฟล์ใหม่
+    let link = formData.get("link") || ""; // ไฟล์เดิม
+
+    // อัปโหลดไฟล์ใหม่ถ้ามี
+    if (file && file.size > 0) {
+      const uploadsDir = path.join(process.cwd(), "public", "uploads");
+      if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+      const filename = `${Date.now()}_${file.name}`;
+      const filepath = path.join(uploadsDir, filename);
+
+      const buffer = Buffer.from(await file.arrayBuffer());
+      fs.writeFileSync(filepath, buffer);
+
+      link = `/uploads/${filename}`; // เก็บ path ใหม่
+    }
 
     const db = await connect();
     const [rows] = await db.query(
@@ -54,11 +76,11 @@ export async function PUT(req, { params }) {
            article__status = ?, 
            article_date = NOW()
        WHERE article_id = ?`,
-      [title || "", category || "", type || "", link || "", status, params.id]
+      [title, category, type, link, status, params.id]
     );
 
     // บันทึก comment
-    if (comment && comment.trim() !== "") {
+    if (comment.trim() !== "") {
       await db.query(
         `INSERT INTO ARTICLEHISTORY (A_date, A_comment, article_id)
          VALUES (NOW(), ?, ?)`,
@@ -67,33 +89,9 @@ export async function PUT(req, { params }) {
     }
 
     await db.end();
-
     return NextResponse.json({ message: "อัปเดตบทความเรียบร้อย" }, { status: 200 });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ message: "เกิดข้อผิดพลาด" }, { status: 500 });
-  }
-}
-
-// GET ENUM: ดึงค่า enum ของ status
-export async function GET_ENUM(req) {
-  try {
-    const db = await connect();
-    const [rows] = await db.query(
-      `SHOW COLUMNS FROM ARTICLE LIKE 'article__status'`
-    );
-    await db.end();
-
-    if (rows.length === 0) return NextResponse.json([]);
-
-    const typeStr = rows[0].Type; // enum('Pending','Revision','Appoved','Rejected')
-    const enumValues = typeStr
-      .replace(/^enum\(|\)$/gi, "")
-      .split(",")
-      .map(v => v.replace(/'/g, ""));
-    return NextResponse.json(enumValues);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json([], { status: 500 });
   }
 }

@@ -13,6 +13,7 @@ export default function ArticlesPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [owner, setOwner] = useState(""); // เพิ่ม owner
   const [type, setType] = useState("");
   const [year, setYear] = useState("");
   const [page, setPage] = useState(1);
@@ -21,6 +22,7 @@ export default function ArticlesPage() {
     setLoading(true);
     const params = new URLSearchParams({
       ...(search && { search }),
+      ...(owner && { owner }), // เพิ่ม owner
       ...(type && { type }),
       ...(year && { year }),
       page,
@@ -33,7 +35,7 @@ export default function ArticlesPage() {
       })
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
-  }, [search, type, year, page]);
+  }, [search, owner, type, year, page]);
 
   const pages = Math.ceil(total / 10);
 
@@ -41,6 +43,16 @@ export default function ArticlesPage() {
     <div className="flex max-w-6xl mx-auto p-6 gap-6">
       {/* Sidebar */}
       <aside className="w-64 bg-gray-50 p-4 rounded border">
+        <div className="mb-4">
+          <label className="block font-semibold mb-2">ค้นหาชื่อเจ้าของ</label>
+          <input
+            type="text"
+            className="border p-2 w-full"
+            value={owner}
+            onChange={(e) => { setOwner(e.target.value); setPage(1); }}
+            placeholder="ชื่อเจ้าของผลงาน"
+          />
+        </div>
         <div className="mb-6">
           <label className="block font-semibold mb-2">ประเภทบทความ</label>
           <select className="border p-2 w-full" value={type} onChange={e => { setType(e.target.value); setPage(1); }}>
@@ -86,11 +98,16 @@ export default function ArticlesPage() {
                   <div className="mb-1 text-gray-700">ประเภท: {a.article_type}</div>
                   <div className="mb-1 text-gray-700">วันที่: {a.article_date ? new Date(a.article_date).toLocaleDateString() : "-"}</div>
                   <div className="mb-2 text-gray-700">สถานะ: {a.article__status}</div>
-                  <div className="mb-2 text-gray-700">{a.article_link ? <span>ลิงก์: <a href={a.article_link} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">{a.article_link}</a></span> : null}</div>
+                  <div className="mb-2 text-gray-700">เจ้าของ: {a.owner_name}</div>
+                  {a.article_link && (
+                    <div className="mb-2 text-gray-700">
+                      ลิงก์: <a href={a.article_link} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">{a.article_link}</a>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
-            {/* Pagination */}
+
             {pages > 1 && (
               <div className="flex gap-2 justify-center">
                 {Array.from({ length: pages }, (_, i) => (
